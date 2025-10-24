@@ -306,6 +306,8 @@ if executable('rg')
 elseif executable('ag')
   let g:ackprg = 'ag --vimgrep --smart-case'
   call SetupCommandAlias("ag", "Ack")
+elseif !executable('ack')
+  let g:ackprg = 'grep --recursive --exclude-dir ".*" --with-filename --line-number'
 endif
 
 " NERDTree
