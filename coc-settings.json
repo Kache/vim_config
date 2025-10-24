@@ -1,0 +1,41 @@
+{
+  "coc.preferences.rootPatterns": [".venv", ".tools-versions", ".ruby-version"],
+
+  // disable annoying notification float windows https://github.com/neoclide/coc.nvim/issues/2702
+  "notification.disabledProgressSources": ["*"],
+
+  "diagnostic.errorSign": "✘",
+  "diagnostic.warningSign": "⚠",
+  "diagnostic.infoSign": ">",
+  "diagnostic.hintSign": ">",
+
+  "python.linting.pycodestyleEnabled": true,
+  // "pyright.organizeimports.provider": "isort",
+  "pyright.testing.provider": "pytest",
+
+  // most inlayHints are too noisy
+  "pyright.inlayHints.variableTypes": false,
+  "pyright.inlayHints.parameterTypes": false,
+
+  "rust-analyzer.inlayHints.typeHints.enable": false,
+  // "rust-analyzer.inlayHints.typeHints.hideClosureInitialization": true,
+
+  "suggest.noselect": true,
+
+  "languageserver": {
+    "rubocop": {
+      "command": "rubocop",
+      "args": ["--lsp"],
+      "filetypes": ["ruby"]
+    },
+    "sorbet": {
+      "command": "srb",
+      "args": ["tc", "--typed", "true", "--enable-all-experimental-lsp-features", "--lsp", "--disable-watchman"],
+      "filetypes": ["ruby"],
+      "rootPatterns": ["sorbet/config"],
+      "initializationOptions": {},
+      "settings": {}
+    }
+  }
+}
+// vim: commentstring=//%s

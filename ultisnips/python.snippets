@@ -1,0 +1,125 @@
+global !p
+# adapted from: https://github.com/SirVer/ultisnips/issues/635#issuecomment-170956110
+def first_blank_line():
+    """ Search current vim buffer for first blank line. If not found return current line """
+    search_limit = 100
+    com_delim = re.compile(r'^(\s+)?(""")')
+    in_comment = False
+    for num, line in enumerate(snip.buffer, start=1):
+        if num > search_limit:
+            return None
+        if com_delim.match(line):
+            in_comment = not in_comment
+        if in_comment:
+            continue
+        if re.match(r'^\s*$', line):
+            return num
+    return None
+
+def search_imports(impt, frm='', end=True):
+    """ Look for first instance of import impt or from frm import impt in the currrent
+    vim buffer, if found return -1. If not found return start of imports, if end
+    is true, return end of imports instead. """
+
+    if frm:
+        sch = re.compile(r'^from ' + frm + r' import ' + impt)
+    else:
+        sch = re.compile(r'^(from \w )?import ' + impt)
+    start = 0
+    imp_found = False
+    break_len = 2  # Maximum number of line breaks between imports before termination
+    break_ind = 0
+    last_ind = 0
+    for num, line in enumerate(snip.buffer, start=1):
+        if sch.match(line):
+            return 'exists'
+        elif re.match(r'^(from \w )?import \w', line):
+            if not imp_found:
+                start = num
+            imp_found = True
+            break_ind = 0
+            last_ind = num
+        else:
+            if imp_found:
+                if not last_ind:
+                    last_ind = num
+                if break_ind == break_len:
+                    break
+                else:
+                    break_ind += 1
+    if imp_found:
+        if end:
+            return last_ind + 1 if last_ind else num + 1
+        else:
+            return start
+    else:
+        return -2
+
+def add_import(impt, frm='', end=True):
+    """ Add an import if it does not already exist, default is to add to end """
+    imp_loc = search_imports(impt, frm, end)
+    if imp_loc == 'exists':
+        return
+    if imp_loc == -2:
+        imp_loc = first_blank_line() or vim.current.window.cursor[0]
+
+    imp_loc = imp_loc - 1
+    imp_string = ' '.join(filter(None, [frm and f'from {frm}', f'import {impt}']))
+    snip.buffer.append(imp_string, imp_loc)
+
+def add_imports(impts, end=True):
+    """ Add a list of imports
+    If you want to import as from ... import ..., then use a tuple for the import:
+    [(import, from), import, (import, from), ...] """
+    for impt in impts:
+        if type(impt) is tuple:
+            add_import(*impt, end=end)
+        else:
+            add_import(impt, end=end)
+endglobal
+
+pre_expand "add_import('more_itertools as mi')"
+snippet mi "Auto-import more_itertools as mi"
+mi
+endsnippet
+
+pre_expand "add_import('functools as ft')"
+snippet ft "Auto-import functools as ft"
+ft
+endsnippet
+
+pre_expand "add_import('itertools as it')"
+snippet it "Auto-import itertools as it"
+it
+endsnippet
+
+pre_expand "add_import('datetime as dt')"
+snippet dt "Auto-import datetime as dt"
+dt
+endsnippet
+
+pre_expand "add_import('utils.google.google_ads as ga')"
+snippet ga "Auto-import google.google_ads as ga"
+ga
+endsnippet
+
+pre_expand "add_import('utils.snowflake as sf')"
+snippet sf "Auto-import utils.snowflake as sf"
+sf
+endsnippet
+
+pre_expand "add_import('dataclasses as dc')"
+snippet dc "Auto-import dataclasses as dc"
+dc
+endsnippet
+
+pre_expand "add_import('Path', frm='pathlib')"
+snippet Path "Auto-import from pathlib import Path"
+Path
+endsnippet
+
+post_expand "snip.buffer[snip.snippet_end[0]+1:snip.snippet_end[0]+1] = ['']"
+snippet d "def function" b
+def $1():
+    $2
+endsnippet
