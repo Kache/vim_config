@@ -62,8 +62,11 @@ Plug 'vimwiki/vimwiki'
 Plug 'chrisbra/colorizer'
 Plug 'sheerun/vim-polyglot'
 Plug 'chrisbra/recover.vim'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-" Plug 'neoclide/coc.nvim', {'tag': 'v0.0.82'}  " latest for vim 8.2
+if v:version > 802
+  Plug 'neoclide/coc.nvim', {'branch': 'release'}
+else
+  Plug 'neoclide/coc.nvim', {'tag': 'v0.0.82'}  " latest for vim 8.2
+endif
 if !has('nvim')
   Plug 'SirVer/ultisnips'
 endif
